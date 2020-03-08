@@ -1,3 +1,6 @@
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class Main {
     public static final String AUSTIN_POWERS = "Austin Powers";
     public static final String WEAPONS = "weapons";
@@ -126,8 +129,8 @@ public class Main {
     }
 
     /*
-Посылка, содержимое которой можно получить с помощью метода `getContent`
-*/
+    Посылка, содержимое которой можно получить с помощью метода `getContent`
+    */
     public static class MailPackage extends AbstractSendable {
         private final Package content;
 
@@ -175,37 +178,108 @@ public class Main {
     }
 
     public static class UntrustworthyMailWorker implements MailService {
-        public UntrustworthyMailWorker(MailService[] mailServices) {
 
+        private final MailService[] mailServices;
+        private static final MailService realMailService = new RealMailService();
+
+        public UntrustworthyMailWorker(final MailService[] mailServices) {
+            this.mailServices = mailServices;
+        }
+
+        public MailService getRealMailService() {
+            return realMailService;
         }
 
         @Override
         public Sendable processMail(Sendable mail) {
-            return null;
+            for (MailService mailService : mailServices) {
+                mail = mailService.processMail(mail);
+            }
+
+            return realMailService.processMail(mail);
         }
     }
 
     public static class Spy implements MailService {
 
+        private final Logger LOGGER;
+
+        public Spy(final Logger LOGGER) {
+            this.LOGGER = LOGGER;
+        }
+
         @Override
         public Sendable processMail(Sendable mail) {
-            return null;
+            if (mail instanceof MailMessage) {
+                String from = mail.getFrom();
+                String to = mail.getTo();
+                boolean fromAustin = from.equals(AUSTIN_POWERS);
+                boolean toAustin = to.equals(AUSTIN_POWERS);
+                String direction = "from " + from + " to " + to;
+                if (fromAustin || toAustin) {
+                    String mailMessage = ((MailMessage) mail).getMessage();
+                    String message = "Detected target mail correspondence: " + direction + " \"" + mailMessage + "\"";
+                    LOGGER.warning(message);
+                } else {
+                    LOGGER.info("Usual correspondence: " + direction);
+                }
+            }
+
+            return mail;
         }
     }
 
     public static class Thief implements MailService {
 
+        private final int minPrice;
+        private int stolenValue = 0;
+
+        public Thief(int minPrice) {
+            this.minPrice = minPrice;
+        }
+
+        public int getStolenValue() {
+            return stolenValue;
+        }
+
         @Override
         public Sendable processMail(Sendable mail) {
-            return null;
+            if (mail instanceof MailPackage) {
+                Package content = ((MailPackage) mail).getContent();
+                int packagePrice = content.getPrice();
+                if (packagePrice >= minPrice) {
+                    stolenValue += packagePrice;
+                    String packageContent = content.getContent();
+                    Package newPackage = new Package("stones instead of " + packageContent, 0);
+                    mail = new MailPackage(mail.getFrom(), mail.getTo(), newPackage);
+                }
+            }
+
+            return mail;
         }
     }
 
     public static class Inspector implements MailService {
+        private static final String[] ILLEGAL_CONTENT = {WEAPONS, BANNED_SUBSTANCE};
 
         @Override
         public Sendable processMail(Sendable mail) {
-            return null;
+            if (mail instanceof MailPackage) {
+                String packageContent = ((MailPackage) mail).getContent().getContent();
+
+                boolean packageWithStones = packageContent.contains("stones");
+                if (packageWithStones) {
+                    throw new StolenPackageException();
+                } else {
+                    for (String illegalString : ILLEGAL_CONTENT) {
+                        if (packageContent.contains(illegalString)) {
+                            throw new IllegalStateException();
+                        }
+                    }
+                }
+            }
+
+            return mail;
         }
     }
 }
