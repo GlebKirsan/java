@@ -217,7 +217,7 @@ public class Main {
                 boolean toAustin = to.equals(AUSTIN_POWERS);
                 String direction = "from " + from + " to " + to;
                 if (fromAustin || toAustin) {
-                    String mailMessage = ((MailMessage) mail).getMessage();
+                    String mailMessage = ((MailMessage) mail).getContent();
                     String message = "Detected target mail correspondence: " + direction + " \"" + mailMessage + "\"";
                     LOGGER.warning(message);
                 } else {
