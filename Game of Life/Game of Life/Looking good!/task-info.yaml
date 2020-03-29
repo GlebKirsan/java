@@ -218,32 +218,6 @@ files:
         }
     }
   learner_created: false
-- name: src/life/GameOfLife.java
-  visible: true
-  text: |
-    package life;
-
-    import javax.swing.*;
-
-    public class GameOfLife extends JFrame {
-        public GameOfLife() {
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            setSize(300, 300);
-            setVisible(true);
-        }
-    }
-  learner_created: false
-- name: src/life/ApplicationRunner.java
-  visible: true
-  text: |
-    package life;
-
-    public class ApplicationRunner {
-        public static void main(String[] args) {
-            new GameOfLife();
-        }
-    }
-  learner_created: false
 - name: src/life/Main.java
   visible: true
   text: |
@@ -255,6 +229,18 @@ files:
         }
     }
   learner_created: false
+- name: src/life/Cell.java
+  visible: true
+  learner_created: true
+- name: src/life/Universe.java
+  visible: true
+  learner_created: true
+- name: src/life/UniverseGenerator.java
+  visible: true
+  learner_created: true
+- name: src/life/GameOfLife.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/54/stages/298/implement
-status: Unchecked
+status: Solved
 record: -1
