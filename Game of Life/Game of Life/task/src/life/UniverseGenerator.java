@@ -3,7 +3,7 @@ package life;
 
 import java.util.Random;
 
-class UniverseGenerator {
+abstract class UniverseGenerator {
 
     static boolean fillCell(Random randomizer) {
         return randomizer.nextBoolean();
@@ -11,6 +11,7 @@ class UniverseGenerator {
 
     static void createUniverse(Universe universe) {
         Random randomize = new Random();
+        universe.setGeneration(0);
         int size = universe.getSize();
         for (int i = 0; i < size; ++i) {
             Cell[] cells = universe.at(i);

@@ -172,12 +172,32 @@ files:
   text: |
     package life;
 
+    import java.util.Scanner;
+    import java.util.Random;
+
     public class Main {
+        static char fillCell(Random randomizer) {
+            return randomizer.nextBoolean() ? 'O' : ' ';
+        }
+
         public static void main(String[] args) {
-            System.out.println("Hello World!");
+            Scanner in = new Scanner(System.in);
+
+            int n = in.nextInt();
+            long seed = in.nextLong();
+
+            char[][] map = new char[n][n];
+            Random randomizer = new Random(seed);
+            for (char[] row : map) {
+                for (char cell : row) {
+                    cell = fillCell(randomizer);
+                    System.out.print(cell);
+                }
+                System.out.println();
+            }
         }
     }
   learner_created: false
 feedback_link: https://hyperskill.org/projects/54/stages/295/implement
 status: Solved
-record: 2
+record: 14

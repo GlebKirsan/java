@@ -4,7 +4,8 @@ package life;
 class Universe {
     static private int[] shift = {-1, 0, 1};
 
-    int size;
+    private int generation = 0;
+    private int size;
     Cell[][] universe;
 
     public Universe(int size) {
@@ -22,13 +23,20 @@ class Universe {
         return size;
     }
 
-    public void printUniverse() {
-        for (Cell[] row : universe) {
-            for (Cell cell : row) {
-                System.out.print(cell.isAlive() ? 'O' : ' ');
-            }
-            System.out.println();
-        }
+    public int getGeneration() {
+        return generation;
+    }
+
+    public void setGeneration(int generation) {
+        this.generation = generation;
+    }
+
+    public void increaseGeneration() {
+        ++generation;
+    }
+
+    public Cell[][] getUniverse() {
+        return universe;
     }
 
     public Cell[] at(int i) {
@@ -76,7 +84,7 @@ class Universe {
         }
     }
 
-    public int getAlive() {
+    public int getNumberOfAliveCells() {
         int alive = 0;
 
         for (Cell[] row : universe) {

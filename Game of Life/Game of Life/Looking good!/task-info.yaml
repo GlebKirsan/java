@@ -218,29 +218,225 @@ files:
         }
     }
   learner_created: false
+- name: src/life/GameOfLife.java
+  visible: true
+  text: |
+    package life;
+
+    import javax.swing.*;
+
+    public class GameOfLife extends JFrame {
+        public GameOfLife() {
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setSize(300, 300);
+            setVisible(true);
+        }
+    }
+  learner_created: false
+- name: src/life/ApplicationRunner.java
+  visible: true
+  text: |
+    package life;
+
+    public class ApplicationRunner {
+        public static void main(String[] args) {
+            new GameOfLife();
+        }
+    }
+  learner_created: false
 - name: src/life/Main.java
   visible: true
   text: |
     package life;
 
-    public class Main {
-        public static void main(String[] args) {
-            System.out.println("Hello World!");
+    import java.io.IOException;
+    import java.util.Scanner;
+    import java.util.Random;
+    import java.lang.Thread;
+
+    class Cell {
+        private boolean state;
+
+        public Cell() {
+            this.state = false;
+        }
+
+        public void setState(boolean state) {
+            this.state = state;
+        }
+
+        public void Die() {
+            this.state = false;
+        }
+
+        public void Alive() {
+            this.state = true;
+        }
+
+        public boolean isAlive() {
+            return state;
         }
     }
+
+    class Universe {
+        static private int[] shift = {-1, 0, 1};
+
+        int size;
+        Cell[][] universe;
+
+        public Universe(int size) {
+            this.size = size;
+            universe = new Cell[this.size][this.size];
+
+            for (int i = 0; i < this.size; ++i) {
+                for (int j = 0; j < this.size; ++j) {
+                    universe[i][j] = new Cell();
+                }
+            }
+        }
+
+        public int getSize() {
+            return size;
+        }
+
+        public void printUniverse() {
+            for (Cell[] row : universe) {
+                for (Cell cell : row) {
+                    System.out.print(cell.isAlive() ? 'O' : ' ');
+                }
+                System.out.println();
+            }
+        }
+
+        public Cell[] at(int i) {
+            return universe[i];
+        }
+
+        public Cell at(int i, int j) {
+            return universe[i][j];
+        }
+
+        public byte countAliveNeighbours(int i, int j) {
+            byte alive = 0;
+
+            for (int i_idx : shift) {
+                for (int j_idx : shift) {
+                    if (i_idx == j_idx && i_idx == 0) {
+                        continue;
+                    }
+
+                    int x = (i + i_idx) % size;
+                    if (x < 0) {
+                        x = size - 1;
+                    }
+
+                    int y = (j + j_idx) % size;
+                    if (y < 0) {
+                        y = size - 1;
+                    }
+                    if (universe[x][y].isAlive()) {
+                        ++alive;
+                    }
+                }
+            }
+
+            return alive;
+        }
+
+        static void copy(Universe from, Universe to) {
+            int size = from.getSize();
+            for (int i = 0; i < size; ++i) {
+                for (int j = 0; j < size; ++j) {
+                    Cell cell = to.at(i, j);
+                    cell.setState(from.at(i, j).isAlive());
+                }
+            }
+        }
+
+        public int getAlive() {
+            int alive = 0;
+
+            for (Cell[] row : universe) {
+                for (Cell cell : row) {
+                    alive += cell.isAlive() ? 1 : 0;
+                }
+            }
+
+            return alive;
+        }
+    }
+
+    class UniverseGenerator {
+        static long seed;
+
+        static void setSeed(long seed) {
+            UniverseGenerator.seed = seed;
+        }
+
+        static boolean fillCell(Random randomizer) {
+            return randomizer.nextBoolean();
+        }
+
+        static void createUniverse(Universe universe) {
+            Random randomize = new Random(seed);
+            int size = universe.getSize();
+            for (int i = 0; i < size; ++i) {
+                Cell[] cells = universe.at(i);
+                for (Cell cell : cells) {
+                    cell.setState(fillCell(randomize));
+                }
+            }
+        }
+
+        static void evolve(Universe universe) {
+            int size = universe.getSize();
+            Universe tmp = new Universe(size);
+
+            for (int i = 0; i < size; ++i) {
+                for (int j = 0; j < size; ++j) {
+                    Cell cell = universe.at(i, j);
+                    byte aliveNeighbours = universe.countAliveNeighbours(i, j);
+
+                    if (cell.isAlive() && (aliveNeighbours < 2 || aliveNeighbours > 3)) {
+                        tmp.at(i, j).Die();
+                    } else if (!cell.isAlive() && aliveNeighbours == 3) {
+                        tmp.at(i, j).Alive();
+                    } else {
+                        tmp.at(i, j).setState(universe.at(i, j).isAlive());
+                    }
+                }
+            }
+
+            Universe.copy(tmp, universe);
+        }
+    }
+
+    public class Main {
+        public static void main(String[] args) {
+            Scanner in = new Scanner(System.in);
+            int size = in.nextInt();
+
+            Universe universe = new Universe(size);
+            UniverseGenerator.createUniverse(universe);
+            for (int i = 0; i < 10; ++i) {
+                UniverseGenerator.evolve(universe);
+                System.out.println("Generation #" + (i + 1));
+                System.out.println("Alive: " + universe.getAlive());
+                universe.printUniverse();
+                try {
+                    Thread.sleep(500);
+                    if (System.getProperty("os.name").contains("Windows"))
+                        new ProcessBuilder("cmd","/c","cls").inheritIO().start().waitFor();
+                    else
+                        Runtime.getRuntime().exec("clear");
+                }
+                catch (IOException | InterruptedException e) {}
+            }
+        }
+
+
+    }
   learner_created: false
-- name: src/life/Cell.java
-  visible: true
-  learner_created: true
-- name: src/life/Universe.java
-  visible: true
-  learner_created: true
-- name: src/life/UniverseGenerator.java
-  visible: true
-  learner_created: true
-- name: src/life/GameOfLife.java
-  visible: true
-  learner_created: true
 feedback_link: https://hyperskill.org/projects/54/stages/298/implement
 status: Solved
-record: -1
+record: 13
