@@ -224,6 +224,27 @@ files:
         }
     }
   learner_created: false
+- name: src/GameOfLife.jar.txt
+  visible: true
+  learner_created: true
+- name: src/life/GameOfLife.class
+  visible: true
+  learner_created: true
+- name: src/life/Main.class
+  visible: true
+  learner_created: true
+- name: src/life/Universe.class
+  visible: true
+  learner_created: true
+- name: src/life/UniverseGenerator.class
+  visible: true
+  learner_created: true
+- name: src/life/Cell.class
+  visible: true
+  learner_created: true
+- name: src/life/Controller.class
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/54/stages/294/implement
 status: Solved
 record: 16
