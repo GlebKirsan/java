@@ -461,17 +461,6 @@ files:
 
     }
   learner_created: false
-- name: src/processor/Main.java
-  visible: true
-  text: |
-    package processor;
-
-    public class Main {
-        public static void main(String[] args) {
-            System.out.println("Hello World!");
-        }
-    }
-  learner_created: false
 - name: src/processor/Matrix.java
   visible: true
   text: |
